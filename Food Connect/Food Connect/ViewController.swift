@@ -135,12 +135,12 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             {
                 let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
                 
-                let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint]) // Alternatively, we could use '.existingPlaneUsingExtent' for more grounded hit-test-points.
+                let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
                 
                 if let closestResult = arHitTestResults.first {
                     // Get Coordinates of HitTest
                     let transform : matrix_float4x4 = closestResult.worldTransform
-                    let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y + 0.15, transform.columns.3.z)
+                    let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y + 0.05, transform.columns.3.z)
                     
                     // Create 3D Text
                     let node : SCNNode = self.createNewBubbleParentNode("Toona")
