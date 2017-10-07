@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		06EAB0071F892506000F8CCF /* GoogLeNetPlaces.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 06EAB0061F8924BE000F8CCF /* GoogLeNetPlaces.mlmodel */; };
+		06EAB0091F894D6A000F8CCF /* Resnet50.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 06EAB0081F894D57000F8CCF /* Resnet50.mlmodel */; };
 		DC3C80A91F890E6F0087113C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80A81F890E6F0087113C /* AppDelegate.swift */; };
 		DC3C80AB1F890E6F0087113C /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = DC3C80AA1F890E6F0087113C /* art.scnassets */; };
 		DC3C80AD1F890E6F0087113C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80AC1F890E6F0087113C /* ViewController.swift */; };
@@ -35,6 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		06EAB0061F8924BE000F8CCF /* GoogLeNetPlaces.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = GoogLeNetPlaces.mlmodel; sourceTree = "<group>"; };
+		06EAB0081F894D57000F8CCF /* Resnet50.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = Resnet50.mlmodel; sourceTree = "<group>"; };
 		DC3C80A51F890E6F0087113C /* Food Connect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Food Connect.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC3C80A81F890E6F0087113C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DC3C80AA1F890E6F0087113C /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
@@ -76,9 +80,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		06EAB0051F892458000F8CCF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				06EAB0081F894D57000F8CCF /* Resnet50.mlmodel */,
+				06EAB0061F8924BE000F8CCF /* GoogLeNetPlaces.mlmodel */,
+			);
+			name = Resources;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		DC3C809C1F890E6F0087113C = {
 			isa = PBXGroup;
 			children = (
+				06EAB0051F892458000F8CCF /* Resources */,
 				DC3C80A71F890E6F0087113C /* Food Connect */,
 				DC3C80BE1F890E6F0087113C /* Food ConnectTests */,
 				DC3C80C91F890E6F0087113C /* Food ConnectUITests */,
@@ -260,6 +275,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				06EAB0091F894D6A000F8CCF /* Resnet50.mlmodel in Sources */,
+				06EAB0071F892506000F8CCF /* GoogLeNetPlaces.mlmodel in Sources */,
 				DC3C80AD1F890E6F0087113C /* ViewController.swift in Sources */,
 				DC3C80A91F890E6F0087113C /* AppDelegate.swift in Sources */,
 			);
@@ -427,7 +444,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 8ZF9TRQNRJ;
+				DEVELOPMENT_TEAM = M3Z9RRVAZU;
 				INFOPLIST_FILE = "Food Connect/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Tina.Food-Connect";
@@ -441,7 +458,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 8ZF9TRQNRJ;
+				DEVELOPMENT_TEAM = M3Z9RRVAZU;
 				INFOPLIST_FILE = "Food Connect/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "Tina.Food-Connect";
