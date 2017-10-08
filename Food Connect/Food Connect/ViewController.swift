@@ -17,6 +17,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     // Need to use SceneView to show the AR content
     @IBOutlet var sceneView: ARSCNView!
     let bubbleDepth : Float = 0.01 // the 'depth' of 3D text
+	var lastTime = getCurrentMillis()
     
     // COREML
     var visionRequests = [VNRequest]()
@@ -128,7 +129,15 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // Get Camera Image as RGB
         let pixbuff : CVPixelBuffer? = (sceneView.session.currentFrame?.capturedImage)
         if pixbuff == nil { return }
-        
+	    let ciImage = CIImage(cvPixelBuffer: pixbuff!)
+		
+		let image = UIImage(ciImage: ciImage)
+		print("printing image \(image)")
+		if ((getCurrentMillis() - lastTime) > 3000){
+			lastTime = getCurrentMillis()
+			imageUpload(image : image)
+		}
+//		text_image
         guard let googleModel = try? VNCoreMLModel (for : Resnet50().model) else { return }
         let videorequest = VNCoreMLRequest(model: googleModel) {(finishedReq, err) in
             guard let foodArray  = finishedReq.results as? [VNClassificationObservation] else { return }
@@ -206,6 +215,122 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // Reset tracking and/or remove existing anchors if consistent tracking is required
 
     }
+	
+
+	func imageUpload(image : UIImage){
+		let requestUrlString = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr/" + "?language=unk"  + "&detectOrientation%20=true"
+//		var url = URLRequest(url: URL(string: requestUrlString))!
+		let urlString = URL(string: requestUrlString)
+		
+		
+		var url = URLRequest(url: urlString!)
+		print("printing image inside \(image)")
+		var lastRequestTime = getCurrentMillis()
+		guard let ciImage = image.ciImage, let cgImage = CIContext(options: nil).createCGImage(ciImage, from: ciImage.extent) else { return }
+		url.setValue("aa5a0477fe304d84b81b46ace10c8c56", forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+		var finalImage = UIImage(cgImage: cgImage)
+		print("Uploading Image")
+		url.httpMethod = "POST"
+		url.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+		print(UIImageJPEGRepresentation(finalImage, 0.7))
+		url.httpBody = createBody(data: UIImageJPEGRepresentation(finalImage, 0.7)!,
+		                        mimeType: "image/jpg",
+		                        filename: "textimage.jpg")
+
+		let task = URLSession.shared.dataTask(with: url){ data, response, error in
+			if error != nil{
+				print("Error -> \(error)")
+				return
+			}else{
+				let results = try! JSONSerialization.jsonObject(with: data!, options: []) as? [String:AnyObject]
+				
+				// Hand dict over
+				DispatchQueue.main.async {
+					print(results)
+					var data = parseJson(results!)
+					if(data.count > 0){
+						for text in data{
+							print(text + " ")
+						}
+					}
+				}
+			}
+			
+		}
+		task.resume()
+		
+	}
+	func createBody(data: Data,
+	                mimeType: String,
+	                filename: String) -> Data {
+		let body = NSMutableData()
+		
+		//		let boundaryPrefix = "--\(boundary)\r\n"
+		
+//		for (key, value) in parameters {
+//			//			body.appendString(boundaryPrefix)
+//			body.appendString("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+//			body.appendString("\(value)\r\n")
+//		}
+		
+		//		body.appendString(boundaryPrefix)
+//		body.appendString("Content- Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n")
+//		body.appendString("Content-Type: \(mimeType)\r\n\r\n")
+		body.append(data)
+//		body.appendString("\r\n")
+		//		body.appendString("--".appending(boundary.appending("--")))
+		
+		return body as Data
+	}
+}
+func parseJson(_ dictionary: [String : AnyObject]) -> [String] {
+	print("parsing Data")
+	if dictionary["regions"] != nil {
+			print("Not nill")
+		
+		var extractedText : String = ""
+		
+		if let regionsz = dictionary["regions"] as? [AnyObject]{
+			for reigons1 in regionsz
+			{
+				if let reigons = reigons1 as? [String:AnyObject]
+				{
+					let lines = reigons["lines"] as! NSArray
+					print (lines)
+					for words in lines{
+						if let wordsArr = words as? [String:AnyObject]{
+							if let dictionaryValue = wordsArr["words"] as? [AnyObject]{
+								for a in dictionaryValue {
+									if let z = a as? [String : String]{
+										print (z["text"]!)
+										extractedText += z["text"]! + " "
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		// Get text from words
+		return [extractedText]
+	}
+	else
+	{
+		return [""];
+	}
+}
+func getCurrentMillis()->Int64 {
+	return Int64(Date().timeIntervalSince1970 * 1000)
+}
+
+	
+extension NSMutableData {
+	func appendString(_ string: String) {
+		let data = string.data(using: String.Encoding.utf8, allowLossyConversion: false)
+		append(data!)
+	}
 }
 
 extension UIFont {
@@ -214,5 +339,6 @@ extension UIFont {
         let descriptor = self.fontDescriptor.withSymbolicTraits(UIFontDescriptorSymbolicTraits(traits))
         return UIFont(descriptor: descriptor!, size: 0)
     }
+	
 }
 
