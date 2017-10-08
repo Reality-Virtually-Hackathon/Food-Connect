@@ -11,12 +11,12 @@
 		06EAB0091F894D6A000F8CCF /* Resnet50.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 06EAB0081F894D57000F8CCF /* Resnet50.mlmodel */; };
 		DC3C80A91F890E6F0087113C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80A81F890E6F0087113C /* AppDelegate.swift */; };
 		DC3C80AB1F890E6F0087113C /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = DC3C80AA1F890E6F0087113C /* art.scnassets */; };
-		DC3C80AD1F890E6F0087113C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80AC1F890E6F0087113C /* ViewController.swift */; };
 		DC3C80B01F890E6F0087113C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC3C80AE1F890E6F0087113C /* Main.storyboard */; };
 		DC3C80B21F890E6F0087113C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DC3C80B11F890E6F0087113C /* Assets.xcassets */; };
 		DC3C80B51F890E6F0087113C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DC3C80B31F890E6F0087113C /* LaunchScreen.storyboard */; };
 		DC3C80C01F890E6F0087113C /* Food_ConnectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80BF1F890E6F0087113C /* Food_ConnectTests.swift */; };
 		DC3C80CB1F890E6F0087113C /* Food_ConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80CA1F890E6F0087113C /* Food_ConnectUITests.swift */; };
+		DCBCD2A91F89A58300504002 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBCD2A81F89A58300504002 /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,7 +42,6 @@
 		DC3C80A51F890E6F0087113C /* Food Connect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Food Connect.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC3C80A81F890E6F0087113C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DC3C80AA1F890E6F0087113C /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		DC3C80AC1F890E6F0087113C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		DC3C80AF1F890E6F0087113C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DC3C80B11F890E6F0087113C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		DC3C80B41F890E6F0087113C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -53,6 +52,7 @@
 		DC3C80C61F890E6F0087113C /* Food ConnectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Food ConnectUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC3C80CA1F890E6F0087113C /* Food_ConnectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food_ConnectUITests.swift; sourceTree = "<group>"; };
 		DC3C80CC1F890E6F0087113C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DCBCD2A81F89A58300504002 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "/Users/arjun/Food-Connect/Food Connect/Food Connect/ViewController.swift"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,8 +115,8 @@
 			isa = PBXGroup;
 			children = (
 				DC3C80A81F890E6F0087113C /* AppDelegate.swift */,
+				DCBCD2A81F89A58300504002 /* ViewController.swift */,
 				DC3C80AA1F890E6F0087113C /* art.scnassets */,
-				DC3C80AC1F890E6F0087113C /* ViewController.swift */,
 				DC3C80AE1F890E6F0087113C /* Main.storyboard */,
 				DC3C80B11F890E6F0087113C /* Assets.xcassets */,
 				DC3C80B31F890E6F0087113C /* LaunchScreen.storyboard */,
@@ -275,9 +275,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DCBCD2A91F89A58300504002 /* ViewController.swift in Sources */,
 				06EAB0091F894D6A000F8CCF /* Resnet50.mlmodel in Sources */,
 				06EAB0071F892506000F8CCF /* GoogLeNetPlaces.mlmodel in Sources */,
-				DC3C80AD1F890E6F0087113C /* ViewController.swift in Sources */,
 				DC3C80A91F890E6F0087113C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
