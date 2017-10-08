@@ -136,7 +136,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             print(food.identifier, food.confidence)
             if ( food.identifier == "water bottle" && self.tuna == false )
             {
-                print("mofo")
                 let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
                 
                 let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
