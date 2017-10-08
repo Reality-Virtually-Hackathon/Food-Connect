@@ -67,19 +67,26 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         if let closestResult = arHitTestResults.first {
             // Get Coordinates of HitTest
             let transform : matrix_float4x4 = closestResult.worldTransform
-            let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y + 0.15, transform.columns.3.z)
+            let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y - 0.5, transform.columns.3.z)
             
             // Create 3D Text
-            let node : SCNNode = createNewBubbleParentNode("Toona")
-            sceneView.scene.rootNode.addChildNode(node)
-            node.position = worldCoord
+//            let node : SCNNode = createNewBubbleParentNode("Toona")
+//            sceneView.scene.rootNode.addChildNode(node)
+//            node.position = worldCoord
+            
+            let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+            let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+            //tableNode?.scale = SCNVector3Make(0.005, 0.005, 0.005)
+            tableNode?.position = worldCoord
+            self.sceneView.scene.rootNode.addChildNode(tableNode!)
         }
+        
     }
     
     // MARK: ARKit Set Up
     func createNewBubbleParentNode(_ text : String) -> SCNNode {
         
-        // TEXT BILLBOARD CONSTRAINT
+        // Makes the text always face the camera!
         let billboardConstraint = SCNBillboardConstraint()
         billboardConstraint.freeAxes = SCNBillboardAxis.Y
         
@@ -88,33 +95,33 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         var font = UIFont(name: "Futura", size: 0.15)
         font = font?.withTraits(traits: .traitBold)
         bubble.font = font
-        bubble.alignmentMode = kCAAlignmentCenter
+//        bubble.alignmentMode = kCAAlignmentCenter
         bubble.firstMaterial?.diffuse.contents = UIColor.orange
         bubble.firstMaterial?.specular.contents = UIColor.white
         bubble.firstMaterial?.isDoubleSided = true
-        // bubble.flatness // setting this too low can cause crashes.
         bubble.chamferRadius = CGFloat(bubbleDepth)
         
         // BUBBLE NODE
+        /*
+         This is doing something that I do not understand. But it is important. Makes it so the text doesn't go super high
+         */
         let (minBound, maxBound) = bubble.boundingBox
         let bubbleNode = SCNNode(geometry: bubble)
         // Centre Node - to Centre-Bottom point
-        bubbleNode.pivot = SCNMatrix4MakeTranslation( (maxBound.x - minBound.x)/2, minBound.y, bubbleDepth/2)
+        bubbleNode.pivot = SCNMatrix4MakeTranslation( (maxBound.x - minBound.x)/2, minBound.y, bubbleDepth/2 )
         // Reduce default text size
         bubbleNode.scale = SCNVector3Make(0.2, 0.2, 0.2)
         
         // BUBBLE PARENT NODE
         let bubbleNodeParent = SCNNode()
         bubbleNodeParent.addChildNode(bubbleNode)
-        bubbleNodeParent.constraints = [billboardConstraint]
         
         return bubbleNodeParent
     }
-    
+
     // MARK: CoreML + Vision
     func loopCoreMLUpdate() {
         // Continuously run CoreML whenever it's ready. (Preventing 'hiccups' in Frame Rate)
-        
         dispatchQueueML.async {
             // 1. Run Update.
             self.updateCoreML()
@@ -129,6 +136,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // Get Camera Image as RGB
         let pixbuff : CVPixelBuffer? = (sceneView.session.currentFrame?.capturedImage)
         if pixbuff == nil { return }
+
+        
+        // Use the Google ML Model
 	    let ciImage = CIImage(cvPixelBuffer: pixbuff!)
 		
 		let image = UIImage(ciImage: ciImage)
@@ -138,28 +148,65 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 			imageUpload(image : image)
 		}
 //		text_image
+
         guard let googleModel = try? VNCoreMLModel (for : Resnet50().model) else { return }
+        // videorequest takes each frame and uses the model to compare
         let videorequest = VNCoreMLRequest(model: googleModel) {(finishedReq, err) in
+            //
             guard let foodArray  = finishedReq.results as? [VNClassificationObservation] else { return }
             guard let food = foodArray.first else { return }
             print(food.identifier, food.confidence)
+            // if identifier is a water bottle and we haven't added the AR yet
             if ( food.identifier == "water bottle" && self.tuna == false )
             {
+                // get the center of the screen
                 let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
                 
+                // use the center of the screen and see the results that come from that location in the world
                 let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
                 
                 if let closestResult = arHitTestResults.first {
-                    // Get Coordinates of HitTest
                     let transform : matrix_float4x4 = closestResult.worldTransform
-                    let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y + 0.05, transform.columns.3.z)
+                    let worldCoord : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+                    /*
+                    // Object 1
+                    let transform : matrix_float4x4 = closestResult.worldTransform
+                    let worldCoord1 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+                    // Object 2
+                    let worldCoord2 : SCNVector3 = SCNVector3Make(transform.columns.3.x, (transform.columns.3.y), transform.columns.3.z)
+                    // Object 3
+                    let worldCoord3 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
                     
-                    // Create 3D Text
-                    let node : SCNNode = self.createNewBubbleParentNode("Toona")
-                    self.sceneView.scene.rootNode.addChildNode(node)
-                    node.position = worldCoord
+                    // Text 1
+                    let node1 : SCNNode = self.createNewBubbleParentNode("ONE")
+                    self.sceneView.scene.rootNode.addChildNode(node1)
+                    node1.position = worldCoord1
+                    // Text 2
+                    let node2 : SCNNode = self.createNewBubbleParentNode("TWO")
+                    self.sceneView.scene.rootNode.addChildNode(node2)
+                    node2.position = worldCoord2
+                    // Text 3
+                    let node3 : SCNNode = self.createNewBubbleParentNode("THREE")
+                    self.sceneView.scene.rootNode.addChildNode(node3)
+                    node3.position = worldCoord3
+                    */
+                    
+                    
+                    // Create a new scene from .scn file
+//                    let shipScene = SCNScene(named: "art.scnassets/ship.scn")
+//                    // Create a node from the .scn file
+//                    let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
+//                    shipNode?.position = worldCoord
+//                    self.sceneView.scene.rootNode.addChildNode(shipNode!)
+
+                    let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+                    let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+                    //tableNode?.scale = SCNVector3Make(0.005, 0.005, 0.005)
+                    tableNode?.position = worldCoord
+                    self.sceneView.scene.rootNode.addChildNode(tableNode!)
+ 
+                    self.tuna = true
                 }
-                self.tuna = true
             }
         }
         try? VNImageRequestHandler(cvPixelBuffer: pixbuff!, options: [:]).perform([videorequest])
@@ -248,18 +295,75 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 				DispatchQueue.main.async {
 					print(results)
 					var data = parseJson(results!)
+                    var finaltext = ""
 					if(data.count > 0){
-						for text in data{
+						for text in data {
 							print(text + " ")
+                            finaltext.append(text + " ")
 						}
 					}
+                    if ( finaltext.lowercased().contains("dairypure") || finaltext.lowercased().contains("dairy pure") )
+                    {
+                        // Call AR function
+                        self.arMagic()
+                    }
 				}
 			}
-			
 		}
 		task.resume()
 		
 	}
+    
+    func arMagic() {
+        // get the center of the screen
+        let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
+        
+        // use the center of the screen and see the results that come from that location in the world
+        let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
+        
+        if let closestResult = arHitTestResults.first {
+            let transform : matrix_float4x4 = closestResult.worldTransform
+            let worldCoord : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+            /*
+             // Object 1
+             let transform : matrix_float4x4 = closestResult.worldTransform
+             let worldCoord1 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+             // Object 2
+             let worldCoord2 : SCNVector3 = SCNVector3Make(transform.columns.3.x, (transform.columns.3.y), transform.columns.3.z)
+             // Object 3
+             let worldCoord3 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+             
+             // Text 1
+             let node1 : SCNNode = self.createNewBubbleParentNode("ONE")
+             self.sceneView.scene.rootNode.addChildNode(node1)
+             node1.position = worldCoord1
+             // Text 2
+             let node2 : SCNNode = self.createNewBubbleParentNode("TWO")
+             self.sceneView.scene.rootNode.addChildNode(node2)
+             node2.position = worldCoord2
+             // Text 3
+             let node3 : SCNNode = self.createNewBubbleParentNode("THREE")
+             self.sceneView.scene.rootNode.addChildNode(node3)
+             node3.position = worldCoord3
+             */
+            
+            
+            // Create a new scene from .scn file
+//            let shipScene = SCNScene(named: "art.scnassets/ship.scn")
+//            // Create a node from the .scn file
+//            let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
+//            shipNode?.position = worldCoord
+//            self.sceneView.scene.rootNode.addChildNode(shipNode!)
+            
+            let tableScene = SCNScene(named: "media.scnassets/Text1.dae")
+            let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+            tableNode?.position = worldCoord
+            self.sceneView.scene.rootNode.addChildNode(tableNode!)
+            
+            self.tuna = true
+        }
+    }
+        
 	func createBody(data: Data,
 	                mimeType: String,
 	                filename: String) -> Data {
