@@ -57,7 +57,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     }
     
     // MARK: - Interaction
-    
     @objc func handleTap(gestureRecognize: UITapGestureRecognizer) {
         // Get Screen Centre
         let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
@@ -81,10 +80,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             shipNode?.position = worldCoord
             sceneView.scene.rootNode.addChildNode(shipNode!)
         }
-        
-    }
-    
-    func createBall(position: SCNVector3) {
         
     }
     
@@ -142,8 +137,11 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let pixbuff : CVPixelBuffer? = (sceneView.session.currentFrame?.capturedImage)
         if pixbuff == nil { return }
         
+        // Use the Google ML Model
         guard let googleModel = try? VNCoreMLModel (for : Resnet50().model) else { return }
+        // videorequest takes each frame and uses the model to compare
         let videorequest = VNCoreMLRequest(model: googleModel) {(finishedReq, err) in
+            //
             guard let foodArray  = finishedReq.results as? [VNClassificationObservation] else { return }
             guard let food = foodArray.first else { return }
             print(food.identifier, food.confidence)
@@ -192,33 +190,23 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
  
                     
                     // Create a new scene from .scn file
-                    var frameScene : SCNScene!
-                    frameScene? = SCNScene(named: "SceneKit SceneX.scn")!
-                    if frameScene != nil {
-                        // Create a node from the .scn file
-                        let frameNode = frameScene.rootNode.childNode(withName: "gt", recursively: true)
-                        frameNode?.position = worldCoord
-                        self.sceneView.scene.rootNode.addChildNode(frameNode!)
-                    }
-                    else
-                    {
-                        print("scene is nil")
-                    }
-                    
-//                    var node = SCNNode()
-//                    let scene = SCNScene(named: "grade_F.dae")
-//                    var nodeArray = scene!.rootNode.childNodes
-//
-//                    for childNode in nodeArray {
-//                        node.addChildNode(childNode as SCNNode)
+//                    var frameScene : SCNScene!
+//                    frameScene? = SCNScene(named: "media.scnassets/grade_Frame02_notTransparent.scn")!
+//                    if frameScene != nil {
+//                        // Create a node from the .scn file
+//                        let frameNode = frameScene.rootNode.childNode(withName: "gt", recursively: true)
+//                        frameNode?.position = worldCoord
+//                        self.sceneView.scene.rootNode.addChildNode(frameNode!)
 //                    }
-//                    node.position = worldCoord
-//                    self.sceneView.scene.rootNode.addChildNode(node)
+//                    else
+//                    {
+//                        print("scene is nil")
+//                    }
 
-//                    let tableScene = SCNScene(named: "art.scnassets/gradeJoined.dae")
-//                    let tableNode = tableScene?.rootNode.childNode(withName: "x", recursively: true)
-//                    tableNode?.position = worldCoord
-//                    self.sceneView.scene.rootNode.addChildNode(tableNode!)
+                    let tableScene = SCNScene(named: "media.scnassets/grade_Frame02_notTransparent.dae")
+                    let tableNode = tableScene?.rootNode.childNode(withName: "x", recursively: true)
+                    tableNode?.position = worldCoord
+                    self.sceneView.scene.rootNode.addChildNode(tableNode!)
  
                     self.tuna = true
                 }
