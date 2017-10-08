@@ -22,6 +22,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     var visionRequests = [VNRequest]()
     let dispatchQueueML = DispatchQueue(label: "com.hw.dispatchqueueml") // A Serial Queue
     
+    // Check whether AR has been added
+    var tuna = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -131,8 +134,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             guard let foodArray  = finishedReq.results as? [VNClassificationObservation] else { return }
             guard let food = foodArray.first else { return }
             print(food.identifier, food.confidence)
-            if ( food.identifier == "water bottle" )
+            if ( food.identifier == "water bottle" && self.tuna == false )
             {
+                print("mofo")
                 let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
                 
                 let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
@@ -147,6 +151,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
                     self.sceneView.scene.rootNode.addChildNode(node)
                     node.position = worldCoord
                 }
+                self.tuna = true
             }
         }
         try? VNImageRequestHandler(cvPixelBuffer: pixbuff!, options: [:]).perform([videorequest])
