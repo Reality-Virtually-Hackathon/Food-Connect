@@ -66,19 +66,18 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         if let closestResult = arHitTestResults.first {
             // Get Coordinates of HitTest
             let transform : matrix_float4x4 = closestResult.worldTransform
-            let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y, transform.columns.3.z)
+            let worldCoord : SCNVector3 = SCNVector3Make(transform.columns.3.x, transform.columns.3.y - 0.5, transform.columns.3.z)
             
             // Create 3D Text
 //            let node : SCNNode = createNewBubbleParentNode("Toona")
 //            sceneView.scene.rootNode.addChildNode(node)
 //            node.position = worldCoord
             
-            // Create a new scene from .scn file
-            let shipScene = SCNScene(named: "art.scnassets/ship.scn")
-            // Create a node from the .scn file
-            let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
-            shipNode?.position = worldCoord
-            sceneView.scene.rootNode.addChildNode(shipNode!)
+            let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+            let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+            //tableNode?.scale = SCNVector3Make(0.005, 0.005, 0.005)
+            tableNode?.position = worldCoord
+            self.sceneView.scene.rootNode.addChildNode(tableNode!)
         }
         
     }
@@ -203,8 +202,9 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 //                        print("scene is nil")
 //                    }
 
-                    let tableScene = SCNScene(named: "media.scnassets/grade_Frame02_notTransparent.dae")
-                    let tableNode = tableScene?.rootNode.childNode(withName: "x", recursively: true)
+                    let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+                    let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+                    //tableNode?.scale = SCNVector3Make(0.005, 0.005, 0.005)
                     tableNode?.position = worldCoord
                     self.sceneView.scene.rootNode.addChildNode(tableNode!)
  
