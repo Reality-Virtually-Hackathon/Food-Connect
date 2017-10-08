@@ -17,6 +17,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     // Need to use SceneView to show the AR content
     @IBOutlet var sceneView: ARSCNView!
     let bubbleDepth : Float = 0.01 // the 'depth' of 3D text
+	var lastTime = getCurrentMillis()
     
     // COREML
     var visionRequests = [VNRequest]()
@@ -135,8 +136,19 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // Get Camera Image as RGB
         let pixbuff : CVPixelBuffer? = (sceneView.session.currentFrame?.capturedImage)
         if pixbuff == nil { return }
+
         
         // Use the Google ML Model
+	    let ciImage = CIImage(cvPixelBuffer: pixbuff!)
+		
+		let image = UIImage(ciImage: ciImage)
+		print("printing image \(image)")
+		if ((getCurrentMillis() - lastTime) > 3000){
+			lastTime = getCurrentMillis()
+			imageUpload(image : image)
+		}
+//		text_image
+
         guard let googleModel = try? VNCoreMLModel (for : Resnet50().model) else { return }
         // videorequest takes each frame and uses the model to compare
         let videorequest = VNCoreMLRequest(model: googleModel) {(finishedReq, err) in
@@ -186,21 +198,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 //                    let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
 //                    shipNode?.position = worldCoord
 //                    self.sceneView.scene.rootNode.addChildNode(shipNode!)
- 
-                    
-                    // Create a new scene from .scn file
-//                    var frameScene : SCNScene!
-//                    frameScene? = SCNScene(named: "media.scnassets/grade_Frame02_notTransparent.scn")!
-//                    if frameScene != nil {
-//                        // Create a node from the .scn file
-//                        let frameNode = frameScene.rootNode.childNode(withName: "gt", recursively: true)
-//                        frameNode?.position = worldCoord
-//                        self.sceneView.scene.rootNode.addChildNode(frameNode!)
-//                    }
-//                    else
-//                    {
-//                        print("scene is nil")
-//                    }
 
                     let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
                     let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
@@ -265,6 +262,179 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         // Reset tracking and/or remove existing anchors if consistent tracking is required
 
     }
+	
+
+	func imageUpload(image : UIImage){
+		let requestUrlString = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/ocr/" + "?language=unk"  + "&detectOrientation%20=true"
+//		var url = URLRequest(url: URL(string: requestUrlString))!
+		let urlString = URL(string: requestUrlString)
+		
+		
+		var url = URLRequest(url: urlString!)
+		print("printing image inside \(image)")
+		var lastRequestTime = getCurrentMillis()
+		guard let ciImage = image.ciImage, let cgImage = CIContext(options: nil).createCGImage(ciImage, from: ciImage.extent) else { return }
+		url.setValue("aa5a0477fe304d84b81b46ace10c8c56", forHTTPHeaderField: "Ocp-Apim-Subscription-Key")
+		var finalImage = UIImage(cgImage: cgImage)
+		print("Uploading Image")
+		url.httpMethod = "POST"
+		url.setValue("application/octet-stream", forHTTPHeaderField: "Content-Type")
+		print(UIImageJPEGRepresentation(finalImage, 0.7))
+		url.httpBody = createBody(data: UIImageJPEGRepresentation(finalImage, 0.7)!,
+		                        mimeType: "image/jpg",
+		                        filename: "textimage.jpg")
+
+		let task = URLSession.shared.dataTask(with: url){ data, response, error in
+			if error != nil{
+				print("Error -> \(error)")
+				return
+			}else{
+				let results = try! JSONSerialization.jsonObject(with: data!, options: []) as? [String:AnyObject]
+				
+				// Hand dict over
+				DispatchQueue.main.async {
+					print(results)
+					var data = parseJson(results!)
+                    var finaltext = ""
+					if(data.count > 0){
+						for text in data {
+							print(text + " ")
+                            finaltext.append(text + " ")
+						}
+					}
+                    if ( finaltext.lowercased().contains("dairypure") || finaltext.lowercased().contains("dairy pure") )
+                    {
+                        // Call AR function
+                        self.arMagic()
+                    }
+				}
+			}
+		}
+		task.resume()
+		
+	}
+    
+    func arMagic() {
+        // get the center of the screen
+        let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
+        
+        // use the center of the screen and see the results that come from that location in the world
+        let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
+        
+        if let closestResult = arHitTestResults.first {
+            let transform : matrix_float4x4 = closestResult.worldTransform
+            let worldCoord : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+            /*
+             // Object 1
+             let transform : matrix_float4x4 = closestResult.worldTransform
+             let worldCoord1 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+             // Object 2
+             let worldCoord2 : SCNVector3 = SCNVector3Make(transform.columns.3.x, (transform.columns.3.y), transform.columns.3.z)
+             // Object 3
+             let worldCoord3 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+             
+             // Text 1
+             let node1 : SCNNode = self.createNewBubbleParentNode("ONE")
+             self.sceneView.scene.rootNode.addChildNode(node1)
+             node1.position = worldCoord1
+             // Text 2
+             let node2 : SCNNode = self.createNewBubbleParentNode("TWO")
+             self.sceneView.scene.rootNode.addChildNode(node2)
+             node2.position = worldCoord2
+             // Text 3
+             let node3 : SCNNode = self.createNewBubbleParentNode("THREE")
+             self.sceneView.scene.rootNode.addChildNode(node3)
+             node3.position = worldCoord3
+             */
+            
+            
+            // Create a new scene from .scn file
+//            let shipScene = SCNScene(named: "art.scnassets/ship.scn")
+//            // Create a node from the .scn file
+//            let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
+//            shipNode?.position = worldCoord
+//            self.sceneView.scene.rootNode.addChildNode(shipNode!)
+            
+            let tableScene = SCNScene(named: "media.scnassets/Text1.dae")
+            let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+            tableNode?.position = worldCoord
+            self.sceneView.scene.rootNode.addChildNode(tableNode!)
+            
+            self.tuna = true
+        }
+    }
+        
+	func createBody(data: Data,
+	                mimeType: String,
+	                filename: String) -> Data {
+		let body = NSMutableData()
+		
+		//		let boundaryPrefix = "--\(boundary)\r\n"
+		
+//		for (key, value) in parameters {
+//			//			body.appendString(boundaryPrefix)
+//			body.appendString("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n")
+//			body.appendString("\(value)\r\n")
+//		}
+		
+		//		body.appendString(boundaryPrefix)
+//		body.appendString("Content- Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\n")
+//		body.appendString("Content-Type: \(mimeType)\r\n\r\n")
+		body.append(data)
+//		body.appendString("\r\n")
+		//		body.appendString("--".appending(boundary.appending("--")))
+		
+		return body as Data
+	}
+}
+func parseJson(_ dictionary: [String : AnyObject]) -> [String] {
+	print("parsing Data")
+	if dictionary["regions"] != nil {
+			print("Not nill")
+		
+		var extractedText : String = ""
+		
+		if let regionsz = dictionary["regions"] as? [AnyObject]{
+			for reigons1 in regionsz
+			{
+				if let reigons = reigons1 as? [String:AnyObject]
+				{
+					let lines = reigons["lines"] as! NSArray
+					print (lines)
+					for words in lines{
+						if let wordsArr = words as? [String:AnyObject]{
+							if let dictionaryValue = wordsArr["words"] as? [AnyObject]{
+								for a in dictionaryValue {
+									if let z = a as? [String : String]{
+										print (z["text"]!)
+										extractedText += z["text"]! + " "
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+		}
+		// Get text from words
+		return [extractedText]
+	}
+	else
+	{
+		return [""];
+	}
+}
+func getCurrentMillis()->Int64 {
+	return Int64(Date().timeIntervalSince1970 * 1000)
+}
+
+	
+extension NSMutableData {
+	func appendString(_ string: String) {
+		let data = string.data(using: String.Encoding.utf8, allowLossyConversion: false)
+		append(data!)
+	}
 }
 
 extension UIFont {
@@ -273,5 +443,6 @@ extension UIFont {
         let descriptor = self.fontDescriptor.withSymbolicTraits(UIFontDescriptorSymbolicTraits(traits))
         return UIFont(descriptor: descriptor!, size: 0)
     }
+	
 }
 
