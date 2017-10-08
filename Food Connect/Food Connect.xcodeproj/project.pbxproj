@@ -17,6 +17,7 @@
 		DC3C80C01F890E6F0087113C /* Food_ConnectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80BF1F890E6F0087113C /* Food_ConnectTests.swift */; };
 		DC3C80CB1F890E6F0087113C /* Food_ConnectUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC3C80CA1F890E6F0087113C /* Food_ConnectUITests.swift */; };
 		DCBCD2A91F89A58300504002 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCBCD2A81F89A58300504002 /* ViewController.swift */; };
+		DCD4939B1F8AABC9007D2B3F /* SceneKit SceneX.scn in Resources */ = {isa = PBXBuildFile; fileRef = DCD4939A1F8AABC9007D2B3F /* SceneKit SceneX.scn */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		DC3C80CA1F890E6F0087113C /* Food_ConnectUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Food_ConnectUITests.swift; sourceTree = "<group>"; };
 		DC3C80CC1F890E6F0087113C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DCBCD2A81F89A58300504002 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = "/Users/arjun/Food-Connect/Food Connect/Food Connect/ViewController.swift"; sourceTree = "<absolute>"; };
+		DCD4939A1F8AABC9007D2B3F /* SceneKit SceneX.scn */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; name = "SceneKit SceneX.scn"; path = "art.scnassets/SceneKit SceneX.scn"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +123,7 @@
 				DC3C80B11F890E6F0087113C /* Assets.xcassets */,
 				DC3C80B31F890E6F0087113C /* LaunchScreen.storyboard */,
 				DC3C80B61F890E6F0087113C /* Info.plist */,
+				DCD4939A1F8AABC9007D2B3F /* SceneKit SceneX.scn */,
 			);
 			path = "Food Connect";
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				DC3C80AB1F890E6F0087113C /* art.scnassets in Resources */,
 				DC3C80B51F890E6F0087113C /* LaunchScreen.storyboard in Resources */,
 				DC3C80B21F890E6F0087113C /* Assets.xcassets in Resources */,
+				DCD4939B1F8AABC9007D2B3F /* SceneKit SceneX.scn in Resources */,
 				DC3C80B01F890E6F0087113C /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
