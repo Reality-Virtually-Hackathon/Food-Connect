@@ -199,7 +199,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 //                    shipNode?.position = worldCoord
 //                    self.sceneView.scene.rootNode.addChildNode(shipNode!)
 
-                    let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+                    //let tableScene = SCNScene(named: "media.scnassets/Text01.dae")
+                    let tableScene = SCNScene(named: "media.scnassets/text3.dae")
                     let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
                     //tableNode?.scale = SCNVector3Make(0.005, 0.005, 0.005)
                     tableNode?.position = worldCoord
@@ -315,52 +316,51 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 	}
     
     func arMagic() {
-        // get the center of the screen
-        let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
-        
-        // use the center of the screen and see the results that come from that location in the world
-        let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
-        
-        if let closestResult = arHitTestResults.first {
-            let transform : matrix_float4x4 = closestResult.worldTransform
-            let worldCoord : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
-            /*
-             // Object 1
-             let transform : matrix_float4x4 = closestResult.worldTransform
-             let worldCoord1 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
-             // Object 2
-             let worldCoord2 : SCNVector3 = SCNVector3Make(transform.columns.3.x, (transform.columns.3.y), transform.columns.3.z)
-             // Object 3
-             let worldCoord3 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
-             
-             // Text 1
-             let node1 : SCNNode = self.createNewBubbleParentNode("ONE")
-             self.sceneView.scene.rootNode.addChildNode(node1)
-             node1.position = worldCoord1
-             // Text 2
-             let node2 : SCNNode = self.createNewBubbleParentNode("TWO")
-             self.sceneView.scene.rootNode.addChildNode(node2)
-             node2.position = worldCoord2
-             // Text 3
-             let node3 : SCNNode = self.createNewBubbleParentNode("THREE")
-             self.sceneView.scene.rootNode.addChildNode(node3)
-             node3.position = worldCoord3
-             */
+        print("entered the arMagic")
+        if ( self.tuna == false )
+        {
+            print("entered the big magic")
+            // get the center of the screen
+            let screenCentre : CGPoint = CGPoint(x: self.sceneView.bounds.midX, y: self.sceneView.bounds.midY)
             
+            // use the center of the screen and see the results that come from that location in the world
+            let arHitTestResults : [ARHitTestResult] = self.sceneView.hitTest(screenCentre, types: [.featurePoint])
             
-            // Create a new scene from .scn file
-//            let shipScene = SCNScene(named: "art.scnassets/ship.scn")
-//            // Create a node from the .scn file
-//            let shipNode = shipScene?.rootNode.childNode(withName: "ship", recursively: true)
-//            shipNode?.position = worldCoord
-//            self.sceneView.scene.rootNode.addChildNode(shipNode!)
-            
-            let tableScene = SCNScene(named: "media.scnassets/Text1.dae")
-            let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
-            tableNode?.position = worldCoord
-            self.sceneView.scene.rootNode.addChildNode(tableNode!)
-            
-            self.tuna = true
+            if let closestResult = arHitTestResults.first {
+                let transform : matrix_float4x4 = closestResult.worldTransform
+                let worldCoord : SCNVector3 = SCNVector3Make((transform.columns.3.x + 0.1), (transform.columns.3.y - 0.3), transform.columns.3.z)
+                /*
+                 // Object 1
+                 let transform : matrix_float4x4 = closestResult.worldTransform
+                 let worldCoord1 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+                 // Object 2
+                 let worldCoord2 : SCNVector3 = SCNVector3Make(transform.columns.3.x, (transform.columns.3.y), transform.columns.3.z)
+                 // Object 3
+                 let worldCoord3 : SCNVector3 = SCNVector3Make((transform.columns.3.x), (transform.columns.3.y), transform.columns.3.z)
+                 
+                 // Text 1
+                 let node1 : SCNNode = self.createNewBubbleParentNode("ONE")
+                 self.sceneView.scene.rootNode.addChildNode(node1)
+                 node1.position = worldCoord1
+                 // Text 2
+                 let node2 : SCNNode = self.createNewBubbleParentNode("TWO")
+                 self.sceneView.scene.rootNode.addChildNode(node2)
+                 node2.position = worldCoord2
+                 // Text 3
+                 let node3 : SCNNode = self.createNewBubbleParentNode("THREE")
+                 self.sceneView.scene.rootNode.addChildNode(node3)
+                 node3.position = worldCoord3
+                 */
+                
+                let tableScene = SCNScene(named: "media.scnassets/Text1.dae")
+                //let tableScene = SCNScene(named: "media.scnassets/text3.dae")
+                let tableNode = tableScene?.rootNode.childNode(withName: "parent", recursively: true)
+                //tableNode?.constraints = [billboardConstraint]
+                tableNode?.position = worldCoord
+                self.sceneView.scene.rootNode.addChildNode(tableNode!)
+                
+                self.tuna = true
+            }
         }
     }
         
